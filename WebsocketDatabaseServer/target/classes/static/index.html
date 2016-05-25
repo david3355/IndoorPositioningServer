@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" content="text/html">
+		<title>Websocket</title>
+		<script type="text/javascript">
+			var websocket = new WebSocket("ws://192.168.1.113:8080/WebSocketServer/websocketServerEndpoint");
+			websocket.onmessage=function processMessage(message){
+				/*
+				var data = JSON.parse(message.data);
+				if(data.message !=null) messagesTextArea.value += data.message + "\n";
+				*/
+				var data = message.data
+				if(data !=null) messagesTextArea.value += data + "\n";
+				
+			}
+			
+			function sendMessage()
+			{
+				websocket.send(messageText.value);
+				messageText.value = "";
+			}
+			
+			function login()
+			{
+				if(usernameDiv.value != "")
+				{
+					usernameDiv.hidden=true;
+					if(websocket==null)
+						{
+						messagesTextArea.value += "Connection failed!" + "\n";
+						}
+					else
+						{
+						try
+						{
+							websocket.send(usernameText.value);
+							messageText.disabled = false;
+							btnSend.disabled = false;
+						}
+						catch(err)
+						{
+							messagesTextArea.value += "Error: " + err.message + "\n";
+						}
+					
+						}
+				}
+			}
+			
+			function checkKey(event)
+			{
+				if(event.keyCode==13)	// enter
+				{
+					sendMessage();
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="usernameDiv"> Username: <input id="usernameText" name="username" type="text" id="usernameText" size="50"))> <input type="button" value="Login" onclick="login();"></div>
+		<textarea id="messagesTextArea" readonly="readonly" rows="10" cols="50"></textarea><br>
+		 <div id="messageDiv" disabled="disabled"> <input name="message" type="text" id="messageText" size="50" onkeydown="checkKey(event);"  disabled="disabled"> <input id="btnSend" disabled="disabled" type="button" value="Send" onclick="sendMessage();"> </div>	
+	</body>
+</html>
